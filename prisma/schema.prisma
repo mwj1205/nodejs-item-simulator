@@ -45,7 +45,8 @@ model Item {
   health        Int           @default(0) 
   power         Int           @default(0)
   characterItems CharacterItem[]
-
+  equippedItems EquippedItem[]
+  
   @@map("Item")
 }
 
@@ -53,14 +54,15 @@ model CharacterItem {
   characterId Int
   itemId      Int
   quantity    Int       @default(1)
-  character   Character @relation(fields: [inventoryId], references: [id])
+  character   Character @relation(fields: [characterId], references: [id])
   item        Item      @relation(fields: [itemId], references: [id])
 
+  @@id([characterId, itemId])
   @@map("CharacterItem")
 }
 
 model EquippedItem {
-  id          Int       @id @default(autoincrement())
+  id          Int       @id @default(autoincrement()) 
   characterId Int       
   itemId      Int       
   character   Character @relation(fields: [characterId], references: [id])
