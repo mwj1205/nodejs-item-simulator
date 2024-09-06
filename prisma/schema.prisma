@@ -14,57 +14,55 @@ datasource db {
 }
 
 model User {
-  id        Int         @id @default(autoincrement()) @map("id")
-  username  String      @unique @map("username")
-  password  String      @map("password")
-  name      String      @map("name")
+  id        Int         @id @default(autoincrement())
+  username  String      @unique
+  password  String      
+  name      String      
   characters Character[]
 
   @@map("User")
 }
 
 model Character {
-  id            Int           @id @default(autoincrement()) @map("id")
-  name          String        @unique @map("name")
-  health        Int           @default(500) @map("health")
-  power         Int           @default(100) @map("power")
-  money         Int           @default(10000) @map("money")
-  userId        Int           @map("user_id")
+  id            Int           @id @default(autoincrement())
+  name          String        @unique
+  health        Int           @default(500)
+  power         Int           @default(100)
+  money         Int           @default(10000)
+  userId        Int           
   user          User          @relation(fields: [userId], references: [id])
-  inventory     Inventory[]
+  items         CharacterItem[]
   equippedItems EquippedItem[]
 
   @@map("Character")
 }
 
 model Item {
-  id            Int           @id @default(autoincrement()) @map("id")
-  code          Int           @unique @map("code")
-  name          String        @map("name")
-  price         Int           @map("price")
-  health        Int           @default(0) @map("health")
-  power         Int           @default(0) @map("power")
-  inventory     Inventory[]
-  equippedItems EquippedItem[]
+  id            Int           @id @default(autoincrement())
+  code          Int           @unique
+  name          String        
+  price         Int           
+  health        Int           @default(0) 
+  power         Int           @default(0)
+  characterItems CharacterItem[]
 
   @@map("Item")
 }
 
-model Inventory {
-  id          Int       @id @default(autoincrement()) @map("id")
-  characterId Int       @map("character_id")
-  itemId      Int       @map("item_id")
-  quantity    Int       @map("quantity")
-  character   Character @relation(fields: [characterId], references: [id])
+model CharacterItem {
+  characterId Int
+  itemId      Int
+  quantity    Int       @default(1)
+  character   Character @relation(fields: [inventoryId], references: [id])
   item        Item      @relation(fields: [itemId], references: [id])
 
-  @@map("Inventory")
+  @@map("CharacterItem")
 }
 
 model EquippedItem {
-  id          Int       @id @default(autoincrement()) @map("id")
-  characterId Int       @map("character_id")
-  itemId      Int       @map("item_id")
+  id          Int       @id @default(autoincrement())
+  characterId Int       
+  itemId      Int       
   character   Character @relation(fields: [characterId], references: [id])
   item        Item      @relation(fields: [itemId], references: [id])
 
