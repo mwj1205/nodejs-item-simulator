@@ -9,6 +9,64 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int         @id @default(autoincrement()) @map("id")
+  username  String      @unique @map("username")
+  password  String      @map("password")
+  name      String      @map("name")
+  characters Character[]
+
+  @@map("User")
+}
+
+model Character {
+  id            Int           @id @default(autoincrement()) @map("id")
+  name          String        @unique @map("name")
+  health        Int           @default(500) @map("health")
+  power         Int           @default(100) @map("power")
+  money         Int           @default(10000) @map("money")
+  userId        Int           @map("user_id")
+  user          User          @relation(fields: [userId], references: [id])
+  inventory     Inventory[]
+  equippedItems EquippedItem[]
+
+  @@map("Character")
+}
+
+model Item {
+  id            Int           @id @default(autoincrement()) @map("id")
+  code          Int           @unique @map("code")
+  name          String        @map("name")
+  price         Int           @map("price")
+  health        Int           @default(0) @map("health")
+  power         Int           @default(0) @map("power")
+  inventory     Inventory[]
+  equippedItems EquippedItem[]
+
+  @@map("Item")
+}
+
+model Inventory {
+  id          Int       @id @default(autoincrement()) @map("id")
+  characterId Int       @map("character_id")
+  itemId      Int       @map("item_id")
+  quantity    Int       @map("quantity")
+  character   Character @relation(fields: [characterId], references: [id])
+  item        Item      @relation(fields: [itemId], references: [id])
+
+  @@map("Inventory")
+}
+
+model EquippedItem {
+  id          Int       @id @default(autoincrement()) @map("id")
+  characterId Int       @map("character_id")
+  itemId      Int       @map("item_id")
+  character   Character @relation(fields: [characterId], references: [id])
+  item        Item      @relation(fields: [itemId], references: [id])
+
+  @@map("EquippedItem")
 }
