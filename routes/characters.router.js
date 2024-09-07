@@ -57,6 +57,7 @@ router.get('/:characterId', async (req, res, next) => {
     }
     userId = req.user?.id;
 
+    // 파라미터의 characterId로 캐릭터 검색
     const character = await prisma.character.findUnique({
       where: { id: parseInt(characterId) },
       include: { user: true },
