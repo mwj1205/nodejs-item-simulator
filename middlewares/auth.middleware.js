@@ -10,7 +10,7 @@ export default async function authenticateToken(req, res, next) {
 
     const [tokenType, token] = authHeader.split(' ');
 
-    if (tokenType !== 'Bearer') throw new Error('잘못된 token 형식입니다.');
+    if (tokenType !== 'Bearer') throw new Error('잘못된 토큰 형식입니다.');
 
     // token에 저장된 userId를 복호화 하여 저장
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -25,6 +25,7 @@ export default async function authenticateToken(req, res, next) {
 
     // 인증된 user를 request의 user에 저장
     req.user = user;
+
     next();
   } catch (error) {
     // 에러에 따라 다른 에러 메세지 전송
