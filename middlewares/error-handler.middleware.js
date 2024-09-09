@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import jwt from 'jsonwebtoken';
 
 const errorHandler = (err, req, res, next) => {
+  // Joi 관련 에러 처리
   if (err instanceof Joi.ValidationError) {
     return res.status(400).json({
       error: err.message,
