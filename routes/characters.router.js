@@ -50,7 +50,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
       },
     });
 
-    res.status(201).json({ message: '캐릭터 생성 성공', characterId: character.id });
+    return res.status(201).json({ message: '캐릭터 생성 성공', characterId: character.id });
   } catch (error) {
     next(error);
   }
@@ -86,7 +86,7 @@ router.delete('/:characterId', authMiddleware, async (req, res, next) => {
     // DB에서 캐릭터 삭제
     await prisma.character.delete({ where: { id: characterId } });
 
-    res.status(200).json({ message: '캐릭터 삭제 성공' });
+    return res.status(200).json({ message: '캐릭터 삭제 성공' });
   } catch (error) {
     next(error);
   }
@@ -120,7 +120,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
     }));
 
     // 응답 반환
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
@@ -137,11 +137,12 @@ router.get('/:characterId', async (req, res, next) => {
     if (req.headers['authorization']) {
       try {
         await authMiddleware(req, res, () => {});
-      } catch (a) {
+        if (!req.user) return;
+      } catch (error) {
         return;
       }
     }
-    let userId = req.user?.id;
+    const userId = req.user?.id;
 
     // 파라미터의 characterId로 캐릭터 검색
     const character = await prisma.character.findUnique({
@@ -167,7 +168,7 @@ router.get('/:characterId', async (req, res, next) => {
       response.money = character.money;
     }
 
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
