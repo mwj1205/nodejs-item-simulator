@@ -24,8 +24,20 @@ const itemSchema = Joi.object({
     power: Joi.number().integer().default(0).messages({
       'number.base': '공격력은 숫자여야 합니다.',
     }),
-  }).required(),
+  }),
 });
+
+const updateItemSchema = Joi.object({
+  name: Joi.string(),
+  stat: Joi.object({
+    health: Joi.number().integer().messages({
+      'number.base': '체력은 숫자여야 합니다.',
+    }),
+    power: Joi.number().integer().messages({
+      'number.base': '공격력은 숫자여야 합니다.',
+    }),
+  }),
+}).min(1); // 최소 하나의 필드
 
 const itemCodeSchema = Joi.object({
   itemCode: Joi.number().integer().required().messages({
@@ -53,14 +65,51 @@ router.post('/', async (req, res, next) => {
       data: {
         code,
         name,
-        health: stat.healt,
-        power: stat.power,
+        health: stat?.health || 0,
+        power: stat?.power || 0,
         price,
       },
     });
 
     // 아이템 정보 반환
     return res.status(201).json({ message: '아이템 생성 성공', item: item });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 아이템 수정 API
+router.put('/:itemCode', async (req, res, next) => {
+  try {
+    // 파라미터로 들어온 값 검증
+    const { itemCode } = await itemCodeSchema.validateAsync({
+      itemCode: req.params.itemCode,
+    });
+
+    // body로 들어온 값 검증
+    const updateData = await updateItemSchema.validateAsync(req.body);
+
+    // 아이템 검색
+    const item = await prisma.item.findFirst({ where: { code: itemCode } });
+    if (!item) {
+      const error = new Error('아이템을 찾을 수 없습니다.');
+      error.status = 404;
+      throw error;
+    }
+
+    // 아이템 수정
+    const updatedItem = await prisma.item.update({
+      where: { code: itemCode },
+      data: {
+        name: updateData.name || item.name,
+        health: updateData.stat?.health || item.health,
+        power: updateData.stat?.power || item.power,
+        // 가격은 수정할 수 없음
+      },
+    });
+
+    // 반환
+    return res.status(200).json({ message: '아이템 수정 성공', item: updatedItem });
   } catch (error) {
     next(error);
   }
@@ -92,7 +141,6 @@ router.get('/:itemCode', async (req, res, next) => {
     const item = await prisma.item.findFirst({
       where: { code: itemCode },
     });
-
     if (!item) {
       const error = new Error('아이템을 찾을 수 없습니다.');
       error.status = 404;
