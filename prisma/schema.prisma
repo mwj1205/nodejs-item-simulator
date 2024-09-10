@@ -41,7 +41,7 @@ model Item {
   id            Int           @id @default(autoincrement())
   code          Int           @unique
   name          String        
-  price         Int           
+  price         Int           @default(0)
   health        Int           @default(0) 
   power         Int           @default(0)
   characterItems CharacterItem[]
@@ -69,4 +69,5 @@ model EquippedItem {
   item        Item      @relation(fields: [itemId], references: [id])
 
   @@map("EquippedItem")
+  @@unique([characterId, itemId])
 }

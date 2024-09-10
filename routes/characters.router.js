@@ -29,7 +29,10 @@ router.post('/', authMiddleware, async (req, res, next) => {
     const userId = req.user.id;
 
     // 캐릭터 이름 중복 검사
-    const existingCharacter = await prisma.character.findUnique({ where: { name } });
+    const existingCharacter = await prisma.character.findUnique({
+      where: { name },
+    });
+
     if (existingCharacter) {
       const error = new Error('이미 존재하는 캐릭터 이름입니다.');
       error.status = 400;
@@ -63,7 +66,7 @@ router.delete('/:characterId', authMiddleware, async (req, res, next) => {
     const userId = req.user.id;
 
     const character = await prisma.character.findUnique({
-      where: { id: parseInt(characterId) },
+      where: { id: characterId },
       include: { user: true },
     });
 
@@ -81,7 +84,7 @@ router.delete('/:characterId', authMiddleware, async (req, res, next) => {
     }
 
     // DB에서 캐릭터 삭제
-    await prisma.character.delete({ where: { id: parseInt(characterId) } });
+    await prisma.character.delete({ where: { id: characterId } });
 
     res.status(200).json({ message: '캐릭터 삭제 성공' });
   } catch (error) {
@@ -142,7 +145,7 @@ router.get('/:characterId', async (req, res, next) => {
 
     // 파라미터의 characterId로 캐릭터 검색
     const character = await prisma.character.findUnique({
-      where: { id: parseInt(characterId) },
+      where: { id: characterId },
       include: { user: true },
     });
 
