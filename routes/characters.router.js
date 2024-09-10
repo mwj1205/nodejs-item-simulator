@@ -13,6 +13,14 @@ const characterSchema = Joi.object({
   }),
 });
 
+const characterIdSchema = Joi.object({
+  characterId: Joi.number().integer().required().messages({
+    'number.base': '캐릭터 아이디는 숫자여야 합니다.',
+    'number.integer': '캐릭터 아이디는 정수여야 합니다.',
+    'any.required': '캐릭터 아이디를 입력해주세요.',
+  }),
+});
+
 // 캐릭터 생성 API
 router.post('/', authMiddleware, async (req, res, next) => {
   try {
@@ -49,7 +57,9 @@ router.post('/', authMiddleware, async (req, res, next) => {
 router.delete('/:characterId', authMiddleware, async (req, res, next) => {
   try {
     // DB에서 캐릭터 검색
-    const { characterId } = req.params;
+    const { characterId } = await characterIdSchema.validateAsync({
+      characterId: req.params.characterId,
+    });
     const userId = req.user.id;
 
     const character = await prisma.character.findUnique({
@@ -116,7 +126,9 @@ router.get('/', authMiddleware, async (req, res, next) => {
 // 캐릭터 상세 조회 API
 router.get('/:characterId', async (req, res, next) => {
   try {
-    const { characterId } = req.params;
+    const { characterId } = await characterIdSchema.validateAsync({
+      characterId: req.params.characterId,
+    });
 
     // 로그인 한 경우
     if (req.headers['authorization']) {
