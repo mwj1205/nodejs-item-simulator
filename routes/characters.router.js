@@ -59,12 +59,13 @@ router.post('/', authMiddleware, async (req, res, next) => {
 // 캐릭터 삭제 API
 router.delete('/:characterId', authMiddleware, async (req, res, next) => {
   try {
-    // DB에서 캐릭터 검색
+    // 파라미터 값 검증
     const { characterId } = await characterIdSchema.validateAsync({
       characterId: req.params.characterId,
     });
     const userId = req.user.id;
 
+    // DB에서 캐릭터 검색
     const character = await prisma.character.findUnique({
       where: { id: characterId },
       include: { user: true },

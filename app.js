@@ -2,6 +2,7 @@ import express from 'express';
 import usersRouter from './routes/users.router.js';
 import charactersRouter from './routes/characters.router.js';
 import itemsRouter from './routes/items.router.js';
+import characterItemRouter from './routes/characteritem.router.js';
 import LogMiddleware from './middlewares/log.middleware.js';
 import ErrorHandlerMiddleware from './middlewares/error-handler.middleware.js';
 
@@ -14,6 +15,7 @@ app.use(LogMiddleware);
 app.use('/api/users', usersRouter);
 app.use('/api/characters', charactersRouter);
 app.use('/api/items', itemsRouter);
+app.use('/api/character-item', characterItemRouter);
 
 app.use(ErrorHandlerMiddleware);
 
