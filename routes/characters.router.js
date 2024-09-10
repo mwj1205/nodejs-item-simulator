@@ -6,7 +6,11 @@ import authMiddleware from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
 const characterSchema = Joi.object({
-  name: Joi.string().required(),
+  name: Joi.string().min(2).max(12).required().messages({
+    'string.min': '캐릭터명은 2글자 이상이어야 합니다.',
+    'string.max': '캐릭터명은 12글자를 넘을 수 없습니다.',
+    'any.required': '캐릭터명을 입력해주세요.',
+  }),
 });
 
 // 캐릭터 생성 API
@@ -113,7 +117,6 @@ router.get('/', authMiddleware, async (req, res, next) => {
 router.get('/:characterId', async (req, res, next) => {
   try {
     const { characterId } = req.params;
-    let userId = req.user ? req.user.id : null;
 
     // 로그인 한 경우
     if (req.headers['authorization']) {
@@ -123,7 +126,7 @@ router.get('/:characterId', async (req, res, next) => {
         return;
       }
     }
-    userId = req.user?.id;
+    let userId = req.user?.id;
 
     // 파라미터의 characterId로 캐릭터 검색
     const character = await prisma.character.findUnique({
