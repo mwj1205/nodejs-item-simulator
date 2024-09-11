@@ -140,7 +140,7 @@ router.post(
               where: {
                 characterId_itemCode: {
                   characterId: character.id,
-                  itemCode: cellItem.id,
+                  itemCode: cellItem.code,
                 },
               },
             });
@@ -163,6 +163,33 @@ router.post(
       return res
         .status(200)
         .json({ message: '아이템 판매 성공', remaining_money: updatedCharacter.money });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+// 캐릭터 인벤토리 조회 API
+router.get(
+  '/:characterId/inventory',
+  authMiddleware,
+  authCharMiddleware,
+  async (req, res, next) => {
+    try {
+      const character = req.character;
+
+      const inventory = await prisma.characterItem.findMany({
+        where: { characterId: character.id },
+        include: { item: true },
+      });
+
+      const resInventory = inventory.map((inventory) => ({
+        code: inventory.item.code,
+        name: inventory.item.name,
+        count: inventory.quantity,
+      }));
+
+      res.status(200).json(resInventory);
     } catch (error) {
       next(error);
     }
