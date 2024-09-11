@@ -209,7 +209,7 @@ router.post(
       const updatedCharacter = await prisma.character.update({
         where: { id: character.id },
         data: {
-          money: (character.money += 200),
+          money: { increment: 200 },
         },
       });
 

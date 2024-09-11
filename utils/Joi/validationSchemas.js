@@ -113,3 +113,11 @@ export const itemPurchaseSaleSchema = Joi.array()
   .messages({
     'array.min': '적어도 하나의 아이템을 입력해야 합니다.',
   });
+
+export const itemCodeEquipSchema = Joi.object({
+  code: Joi.number().integer().required().messages({
+    'number.base': '아이템 코드는 숫자여야 합니다.',
+    'number.integer': '아이템 코드는 정수여야 합니다.',
+    'any.required': '아이템 코드를 입력해주세요.',
+  }),
+});
