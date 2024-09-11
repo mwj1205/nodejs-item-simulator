@@ -93,7 +93,7 @@ export const itemCodeSchema = Joi.object({
   }),
 });
 
-export const itemPurchaseSchema = Joi.array()
+export const itemPurchaseSaleSchema = Joi.array()
   .items(
     Joi.object({
       code: Joi.number().integer().required().messages({
@@ -111,5 +111,5 @@ export const itemPurchaseSchema = Joi.array()
   )
   .min(1)
   .messages({
-    'array.min': '적어도 하나의 아이템을 구입해야 합니다.',
+    'array.min': '적어도 하나의 아이템을 입력해야 합니다.',
   });
