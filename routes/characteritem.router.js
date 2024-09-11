@@ -1,37 +1,17 @@
 import express from 'express';
 import Joi from 'joi';
 import { prisma } from '../utils/prisma/prismaClient.js';
+import { itemPurchaseSchema } from '../utils/Joi/validationSchemas.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authCharMiddleware from '../middlewares/auth-character.middleware.js';
 
 const router = express.Router();
 
-const itemSchema = Joi.array()
-  .items(
-    Joi.object({
-      code: Joi.number().integer().required().messages({
-        'number.base': '아이템 코드는 숫자여야 합니다.',
-        'number.integer': '아이템 코드는 정수여야 합니다.',
-        'any.required': '아이템 코드를 입력해주세요.',
-      }),
-      count: Joi.number().integer().min(1).required().messages({
-        'number.base': '수량은 숫자여야 합니다.',
-        'number.integer': '수량은 정수여야 합니다.',
-        'number.min': '수량은 1 이상이어야 합니다.',
-        'any.required': '수량을 입력해주세요.',
-      }),
-    }),
-  )
-  .min(1)
-  .messages({
-    'array.min': '적어도 하나의 아이템을 구입해야 합니다.',
-  });
-
 // 아이템 구입 API
 router.post('/:characterId/buyitem', authMiddleware, authCharMiddleware, async (req, res, next) => {
   try {
     // 바디 검증
-    const items = await itemSchema.validateAsync(req.body);
+    const items = await itemPurchaseSchema.validateAsync(req.body);
 
     const character = req.character;
 
