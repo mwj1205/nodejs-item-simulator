@@ -24,7 +24,7 @@ router.post('/:characterId/buyitem', authMiddleware, authCharMiddleware, async (
       });
       if (!findItem) {
         const error = new Error(`유효하지 않은 아이템 코드: ${item.code} `);
-        error.status = 400;
+        error.status = 404;
         throw error;
       }
       totalCost += findItem.price * item.count;
@@ -80,7 +80,7 @@ router.post('/:characterId/buyitem', authMiddleware, authCharMiddleware, async (
 
 // 아이템 판매 API
 router.post(
-  '/:characterId/cellitem',
+  '/:characterId/sellitem',
   authMiddleware,
   authCharMiddleware,
   async (req, res, next) => {
