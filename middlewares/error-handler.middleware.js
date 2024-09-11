@@ -17,6 +17,7 @@ const errorHandler = (err, req, res, next) => {
 
   return res.status(500).json({
     error: '예상치 못한 오류',
+    errmsg: err.message,
   });
 };
 
