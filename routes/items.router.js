@@ -1,51 +1,8 @@
 import express from 'express';
-import Joi from 'joi';
 import { prisma } from '../utils/prisma/prismaClient.js';
+import { itemSchema, updateItemSchema, itemCodeSchema } from '../utils/Joi/validationSchemas.js';
 
 const router = express.Router();
-
-const itemSchema = Joi.object({
-  code: Joi.number().integer().required().messages({
-    'number.base': '아이템 코드는 숫자여야 합니다.',
-    'number.integer': '아이템 코드는 정수형이어야 합니다.',
-    'any.required': '아이템 코드를 입력해주세요.',
-  }),
-  name: Joi.string().required().messages({
-    'any.required': '아이템 이름을 입력해주세요.',
-  }),
-  price: Joi.number().integer().min(0).default(0).messages({
-    'number.base': '아이템 가격은 숫자여야 합니다.',
-    'number.min': '아이템 가격은 0 이상이어야 합니다.',
-  }),
-  stat: Joi.object({
-    health: Joi.number().integer().default(0).messages({
-      'number.base': '체력은 숫자여야 합니다.',
-    }),
-    power: Joi.number().integer().default(0).messages({
-      'number.base': '공격력은 숫자여야 합니다.',
-    }),
-  }),
-});
-
-const updateItemSchema = Joi.object({
-  name: Joi.string(),
-  stat: Joi.object({
-    health: Joi.number().integer().messages({
-      'number.base': '체력은 숫자여야 합니다.',
-    }),
-    power: Joi.number().integer().messages({
-      'number.base': '공격력은 숫자여야 합니다.',
-    }),
-  }),
-}).min(1); // 최소 하나의 필드
-
-const itemCodeSchema = Joi.object({
-  itemCode: Joi.number().integer().required().messages({
-    'number.base': '아이템 코드는 숫자여야 합니다.',
-    'number.integer': '아이템 코드는 정수여야 합니다.',
-    'any.required': '아이템 코드를 입력해주세요.',
-  }),
-});
 
 // 아이템 생성 API
 router.post('/', async (req, res, next) => {

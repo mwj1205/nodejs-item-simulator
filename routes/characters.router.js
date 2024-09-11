@@ -1,18 +1,10 @@
 import express from 'express';
-import Joi from 'joi';
 import { prisma } from '../utils/prisma/prismaClient.js';
+import { characterIdSchema, characterSchema } from '../utils/Joi/validationSchemas.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authCharMiddleware from '../middlewares/auth-character.middleware.js';
 
 const router = express.Router();
-
-const characterSchema = Joi.object({
-  name: Joi.string().min(2).max(12).required().messages({
-    'string.min': '캐릭터명은 2글자 이상이어야 합니다.',
-    'string.max': '캐릭터명은 12글자를 넘을 수 없습니다.',
-    'any.required': '캐릭터명을 입력해주세요.',
-  }),
-});
 
 // 캐릭터 생성 API
 router.post('/', authMiddleware, async (req, res, next) => {
