@@ -55,7 +55,7 @@ model CharacterItem {
   itemCode    Int
   quantity    Int       @default(1)
   character   Character @relation(fields: [characterId], references: [id])
-  item        Item      @relation(fields: [itemCode], references: [id])
+  item        Item      @relation(fields: [itemCode], references: [code])
 
   @@id([characterId, itemCode])
   @@map("CharacterItem")
@@ -64,10 +64,10 @@ model CharacterItem {
 model EquippedItem {
   id          Int       @id @default(autoincrement()) 
   characterId Int       
-  itemId      Int       
+  itemCode    Int       
   character   Character @relation(fields: [characterId], references: [id])
-  item        Item      @relation(fields: [itemId], references: [id])
+  item        Item      @relation(fields: [itemCode], references: [code])
 
+  @@unique([characterId, itemCode])
   @@map("EquippedItem")
-  @@unique([characterId, itemId])
 }
