@@ -1,6 +1,6 @@
 import express from 'express';
 import { prisma } from '../utils/prisma/prismaClient.js';
-import { itemCodeEquipSchema } from '../utils/Joi/validationSchemas.js';
+import { itemCodeEquipSchema, characterIdSchema } from '../utils/Joi/validationSchemas.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authCharMiddleware from '../middlewares/auth-character.middleware.js';
 
@@ -168,6 +168,34 @@ router.post('/:characterId/unequip', authMiddleware, authCharMiddleware, async (
       health: updatedCharacter.health,
       power: updatedCharacter.power,
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 캐릭터가 장착한 아이템 목록 조회 API
+router.get('/:characterId', async (req, res, next) => {
+  try {
+    const { characterId } = await characterIdSchema.validateAsync(req.params);
+
+    // 캐릭터 인증 미들웨어를 사용할 수 없어서 직접 찾아옴
+    const character = await prisma.character.findFirst({
+      where: { id: characterId },
+      include: { equippedItems: { include: { item: true } } },
+    });
+    if (!character) {
+      const error = new Error('캐릭터를 찾을 수 없습니다.');
+      error.status = 404;
+      throw error;
+    }
+
+    // 반환할 아이템 정보
+    const response = character.equippedItems.map((equipitem) => ({
+      code: equipitem.item.code,
+      name: equipitem.item.name,
+    }));
+
+    return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
