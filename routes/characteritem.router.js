@@ -189,7 +189,7 @@ router.get(
         count: inventory.quantity,
       }));
 
-      res.status(200).json(resInventory);
+      return res.status(200).json(resInventory);
     } catch (error) {
       next(error);
     }

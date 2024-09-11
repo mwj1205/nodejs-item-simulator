@@ -90,7 +90,81 @@ router.post('/:characterId/equip', authMiddleware, authCharMiddleware, async (re
       return updatedCharacter;
     });
 
-    res.status(200).json({
+    // 변경된 스텟 반환
+    return res.status(200).json({
+      health: updatedCharacter.health,
+      power: updatedCharacter.power,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 아이템 탈착 API
+router.post('/:characterId/unequip', authMiddleware, authCharMiddleware, async (req, res, next) => {
+  try {
+    const character = req.character;
+    const { code } = await itemCodeEquipSchema.validateAsync(req.body);
+
+    // 장착하고 있는 아이템인지 확인
+    const alreadyEquipped = await prisma.equippedItem.findUnique({
+      where: {
+        characterId_itemCode: {
+          characterId: character.id,
+          itemCode: code,
+        },
+      },
+      include: {
+        item: true,
+      },
+    });
+    if (!alreadyEquipped) {
+      const error = new Error('장착 되어있지 않은 아이템입니다.');
+      error.status = 400;
+      throw error;
+    }
+    const updatedCharacter = await prisma.$transaction(async (prisma) => {
+      // 장착된 아이템 DB에서 데이터 삭제
+      await prisma.equippedItem.delete({
+        where: {
+          characterId_itemCode: {
+            characterId: character.id,
+            itemCode: alreadyEquipped.itemCode,
+          },
+        },
+      });
+
+      // 캐릭터의 스텟 업데이트
+      const updatedCharacter = await prisma.character.update({
+        where: { id: character.id },
+        data: {
+          health: { decrement: alreadyEquipped.item.health },
+          power: { decrement: alreadyEquipped.item.power },
+        },
+      });
+
+      // 인벤토리에 아이템 추가 이미 존재하면 quantity +1, 없다면 생성
+      await prisma.characterItem.upsert({
+        where: {
+          characterId_itemCode: {
+            characterId: character.id,
+            itemCode: alreadyEquipped.itemCode,
+          },
+        },
+        update: {
+          quantity: { increment: 1 },
+        },
+        create: {
+          characterId: character.id,
+          itemCode: alreadyEquipped.itemCode,
+          quantity: 1,
+        },
+      });
+      return updatedCharacter;
+    });
+
+    // 변경된 스텟 반환
+    return res.status(200).json({
       health: updatedCharacter.health,
       power: updatedCharacter.power,
     });
