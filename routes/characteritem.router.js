@@ -1,5 +1,4 @@
 import express from 'express';
-import Joi from 'joi';
 import { prisma } from '../utils/prisma/prismaClient.js';
 import { itemPurchaseSaleSchema } from '../utils/Joi/validationSchemas.js';
 import authMiddleware from '../middlewares/auth.middleware.js';

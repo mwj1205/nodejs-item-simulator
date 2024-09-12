@@ -65,6 +65,7 @@ router.post('/login', async (req, res, next) => {
     }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.header('authorization', `Bearer ${token}`);
     res.status(200).json({ message: '로그인 성공', token });
   } catch (error) {
     next(error);
