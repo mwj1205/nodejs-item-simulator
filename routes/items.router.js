@@ -13,7 +13,7 @@ router.post('/', async (req, res, next) => {
     const isexist = await prisma.item.findFirst({ where: { code: code } });
     if (isexist) {
       const error = new Error('이미 존재하는 아이템 코드입니다.');
-      error.status = 400;
+      error.status = 409;
       throw error;
     }
 

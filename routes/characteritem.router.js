@@ -213,7 +213,7 @@ router.post(
         },
       });
 
-      // 게임 머니를 획득한 캐릭터의 이름과 잔액 게임 머니 반환
+      // 게임 머니를 획득한 캐릭터의 이름과 잔여 게임 머니 반환
       return res.status(200).json({
         message: '200 골드 획득!',
         name: updatedCharacter.name,

@@ -20,7 +20,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
     if (existingCharacter) {
       const error = new Error('이미 존재하는 캐릭터 이름입니다.');
-      error.status = 400;
+      error.status = 409;
       throw error;
     }
 
