@@ -30,7 +30,7 @@ model Character {
   power         Int           @default(100)
   money         Int           @default(10000)
   userId        Int           
-  user          User          @relation(fields: [userId], references: [id])
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   items         CharacterItem[]
   equippedItems EquippedItem[]
 
@@ -54,7 +54,7 @@ model CharacterItem {
   characterId Int
   itemCode    Int
   quantity    Int       @default(1)
-  character   Character @relation(fields: [characterId], references: [id])
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
   item        Item      @relation(fields: [itemCode], references: [code])
 
   @@id([characterId, itemCode])
@@ -65,7 +65,7 @@ model EquippedItem {
   id          Int       @id @default(autoincrement()) 
   characterId Int       
   itemCode    Int       
-  character   Character @relation(fields: [characterId], references: [id])
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
   item        Item      @relation(fields: [itemCode], references: [code])
 
   @@unique([characterId, itemCode])
